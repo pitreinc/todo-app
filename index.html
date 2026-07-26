@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #666;
+            --border: #e0e0e0;
+            --primary: #007aff;
+            --danger: #ff3b30;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        [data-theme="dark"] {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #f0f0f0;
+            --text-secondary: #aaa;
+            --border: #333;
+            --primary: #0a84ff;
+            --danger: #ff453a;
+            --shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .theme-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            outline: none;
+            box-shadow: var(--shadow);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .add-btn {
+            padding: 0 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .add-btn:hover { opacity: 0.9; }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        #counter {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-btn:hover { text-decoration: underline; }
+
+        ul { list-style: none; }
+
+        li {
+            background: var(--card);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s;
+        }
+
+        li:hover { transform: translateY(-1px); }
+
+        li.completed span {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        li span {
+            flex: 1;
+            font-size: 16px;
+            word-break: break-word;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            opacity: 0.7;
+        }
+
+        .delete-btn:hover { opacity: 1; background: rgba(255,59,48,0.1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>William's Todo</h1>
+            <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+        </header>
+
+        <div class="input-row">
+            <input type="text" id="todoInput" placeholder="What needs to be done?">
+            <button class="add-btn" onclick="addTodo()">Add</button>
+        </div>
+
+        <div class="toolbar">
+            <p id="counter"></p>
+            <button class="clear-btn" onclick="clearCompleted()">Clear completed</button>
+        </div>
+
+        <ul id="todoList"></ul>
+    </div>
+
+    <script>
+        const API = "https://prowess-squint-revolving.ngrok-free.dev";
+        const API_KEY = "william-todo-secret-2026";   // must match the backend
+
+        function getHeaders() {
+            return {
+                "Content-Type": "application/json",
+                "X-API-Key": API_KEY
+            };
+        }
+
+        // Theme
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            document.querySelector(".theme-btn").textContent = next === "dark" ? "☀️" : "🌙";
+        }
+
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        document.querySelector(".theme-btn").textContent = savedTheme === "dark" ? "☀️" : "🌙";
+
+        async function loadTodos() {
+            const res = await fetch(`${API}/todos`, { headers: getHeaders() });
+            const todos = await res.json();
+            const list = document.getElementById("todoList");
+            list.innerHTML = "";
+
+            const remaining = todos.filter(t => !t.completed).length;
+            document.getElementById("counter").textContent =
+                remaining === 1 ? "1 item left" : `${remaining} items left`;
+
+            todos.forEach(todo => {
+                const li = document.createElement("li");
+                if (todo.completed) li.classList.add("completed");
+
+                li.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? "checked" : ""}
+                           onchange="toggleTodo(${todo.id}, this.checked)">
+                    <span>${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">✕</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function addTodo() {
+            const input = document.getElementById("todoInput");
+            const text = input.value.trim();
+            if (!text) return;
+
+            await fetch(`${API}/todos`, {
+                method: "POST",
+                headers: getHeaders(),
+                body: JSON.stringify({ text })
+            });
+
+            input.value = "";
+            loadTodos();
+        }
+
+        async function toggleTodo(id, completed) {
+            await fetch(`${API}/todos/${id}?completed=${completed}`, {
+                method: "PUT",
+                headers: getHeaders()
+            });
+            loadTodos();
+        }
+
+        async function deleteTodo(id) {
+            await fetch(`${API}/todos/${id}`, {
+                method: "DELETE",
+                headers: getHeaders()
+            });
+            loadTodos();
+        }
+
+        async function clearCompleted() {
+            const res = await fetch(`${API}/todos`, { headers: getHeaders() });
+            const todos = await res.json();
+
+            for (const todo of todos) {
+                if (todo.completed) {
+                    await fetch(`${API}/todos/${todo.id}`, {
+                        method: "DELETE",
+                        headers: getHeaders()
+                    });
+                }
+            }
+            loadTodos();
+        }
+
+        loadTodos();
+
+        document.getElementById("todoInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") addTodo();
+        });
+    </script>
+</body>
+</html>
