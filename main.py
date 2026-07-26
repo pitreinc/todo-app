@@ -99,4 +99,4 @@ def delete_todo(todo_id: int):
 
 @app.get("/")
 def read_index():
-return FileResponse("index.html")
+	return FileResponse("index.html")
