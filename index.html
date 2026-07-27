@@ -3,43 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
+    <title>William's Todo</title>
     <style>
         :root {
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #1a1a1a;
-            --text-secondary: #666;
-            --border: #e0e0e0;
-            --primary: #007aff;
-            --danger: #ff3b30;
-            --shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        [data-theme="dark"] {
-            --bg: #121212;
-            --card: #1e1e1e;
-            --text: #f0f0f0;
-            --text-secondary: #aaa;
-            --border: #333;
-            --primary: #0a84ff;
-            --danger: #ff453a;
-            --shadow: 0 2px 8px rgba(0,0,0,0.4);
+            --bg: #0b0f19;
+            --card: rgba(22, 27, 40, 0.85);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text: #e8eef7;
+            --text-secondary: #8b9bb4;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --danger: #f43f5e;
+            --success: #10b981;
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: var(--bg);
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
             color: var(--text);
             min-height: 100vh;
             padding: 40px 20px;
-            transition: background 0.3s, color 0.3s;
+            line-height: 1.5;
         }
 
         .container {
-            max-width: 480px;
+            max-width: 440px;
             margin: 0 auto;
         }
 
@@ -47,27 +42,129 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         h1 {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #e8eef7 0%, #8b9bb4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .theme-btn {
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
             background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 28px;
             box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            color: var(--text);
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .switch-auth a {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        .error {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            color: #fb7185;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
         }
 
         .input-row {
@@ -76,75 +173,68 @@
             margin-bottom: 20px;
         }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 14px 16px;
-            font-size: 16px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--card);
-            color: var(--text);
-            outline: none;
-            box-shadow: var(--shadow);
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary);
+        .input-row input {
+            margin-bottom: 0;
         }
 
         .add-btn {
-            padding: 0 20px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+            padding: 0 18px;
             background: var(--primary);
             color: white;
-            box-shadow: var(--shadow);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            transition: all 0.2s;
         }
 
-        .add-btn:hover { opacity: 0.9; }
+        .add-btn:hover {
+            transform: translateY(-1px);
+        }
 
         .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-            padding: 0 4px;
+            padding: 0 2px;
         }
 
         #counter {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .clear-btn {
             background: transparent;
             border: none;
             color: var(--danger);
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             font-weight: 500;
+            opacity: 0.8;
         }
 
-        .clear-btn:hover { text-decoration: underline; }
+        .clear-btn:hover { opacity: 1; }
 
         ul { list-style: none; }
 
         li {
-            background: var(--card);
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
             padding: 14px 16px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: var(--shadow);
-            transition: transform 0.15s;
+            transition: all 0.2s;
         }
 
-        li:hover { transform: translateY(-1px); }
+        li:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
 
         li.completed span {
             text-decoration: line-through;
@@ -152,79 +242,166 @@
         }
 
         input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             accent-color: var(--primary);
             cursor: pointer;
         }
 
         li span {
             flex: 1;
-            font-size: 16px;
+            font-size: 15px;
             word-break: break-word;
         }
 
         .delete-btn {
             background: transparent;
             border: none;
-            color: var(--danger);
-            font-size: 18px;
+            color: var(--text-secondary);
+            font-size: 16px;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 4px 6px;
             border-radius: 6px;
-            opacity: 0.7;
+            transition: all 0.2s;
         }
 
-        .delete-btn:hover { opacity: 1; background: rgba(255,59,48,0.1); }
+        .delete-btn:hover {
+            color: var(--danger);
+            background: rgba(244, 63, 94, 0.1);
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>William's Todo</h1>
-            <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+            <div class="header-actions">
+                <button class="icon-btn" id="logoutBtn" onclick="logout()" title="Logout" style="display:none">⏻</button>
+            </div>
         </header>
 
-        <div class="input-row">
-            <input type="text" id="todoInput" placeholder="What needs to be done?">
-            <button class="add-btn" onclick="addTodo()">Add</button>
+        <!-- AUTH -->
+        <div id="authSection" class="card">
+            <h2 id="authTitle">Welcome back</h2>
+            <div class="error" id="authError"></div>
+
+            <input type="email" id="email" placeholder="Email address" autocomplete="email">
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+
+            <button class="btn btn-primary" id="authBtn" onclick="handleAuth()">Sign in</button>
+
+            <div class="switch-auth">
+                <span id="switchText">New here?</span>
+                <a id="switchLink" onclick="toggleAuthMode()">Create an account</a>
+            </div>
         </div>
 
-        <div class="toolbar">
-            <p id="counter"></p>
-            <button class="clear-btn" onclick="clearCompleted()">Clear completed</button>
-        </div>
+        <!-- TODOS -->
+        <div id="todoSection" class="hidden">
+            <div class="input-row">
+                <input type="text" id="todoInput" placeholder="Add a new task...">
+                <button class="add-btn" onclick="addTodo()">Add</button>
+            </div>
 
-        <ul id="todoList"></ul>
+            <div class="toolbar">
+                <p id="counter">0 items left</p>
+                <button class="clear-btn" onclick="clearCompleted()">Clear completed</button>
+            </div>
+
+            <ul id="todoList"></ul>
+        </div>
     </div>
 
     <script>
         const API = "https://william-todo.onrender.com";
-        const API_KEY = "william-todo-secret-2026";   // must match the backend
+        let token = localStorage.getItem("token");
+        let isLoginMode = true;
+
+        function showError(msg) {
+            const el = document.getElementById("authError");
+            el.textContent = msg;
+            el.style.display = "block";
+        }
+
+        function clearError() {
+            document.getElementById("authError").style.display = "none";
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById("authTitle").textContent = isLoginMode ? "Welcome back" : "Create account";
+            document.getElementById("authBtn").textContent = isLoginMode ? "Sign in" : "Create account";
+            document.getElementById("switchText").textContent = isLoginMode ? "New here?" : "Already have an account?";
+            document.getElementById("switchLink").textContent = isLoginMode ? "Create an account" : "Sign in";
+            clearError();
+        }
+
+        async function handleAuth() {
+            clearError();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                showError("Please fill in both fields");
+                return;
+            }
+
+            const endpoint = isLoginMode ? "/login" : "/register";
+
+            try {
+                const res = await fetch(`${API}${endpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showError(data.detail || "Something went wrong");
+                    return;
+                }
+
+                token = data.access_token;
+                localStorage.setItem("token", token);
+                showTodoApp();
+            } catch (err) {
+                showError("Network error. Please try again.");
+            }
+        }
+
+        function showTodoApp() {
+            document.getElementById("authSection").classList.add("hidden");
+            document.getElementById("todoSection").classList.remove("hidden");
+            document.getElementById("logoutBtn").style.display = "flex";
+            loadTodos();
+        }
+
+        function logout() {
+            token = null;
+            localStorage.removeItem("token");
+            document.getElementById("authSection").classList.remove("hidden");
+            document.getElementById("todoSection").classList.add("hidden");
+            document.getElementById("logoutBtn").style.display = "none";
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+        }
 
         function getHeaders() {
             return {
                 "Content-Type": "application/json",
-                "X-API-Key": API_KEY
+                "Authorization": `Bearer ${token}`
             };
         }
 
-        // Theme
-        function toggleTheme() {
-            const html = document.documentElement;
-            const current = html.getAttribute("data-theme");
-            const next = current === "dark" ? "light" : "dark";
-            html.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            document.querySelector(".theme-btn").textContent = next === "dark" ? "☀️" : "🌙";
-        }
-
-        const savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        document.querySelector(".theme-btn").textContent = savedTheme === "dark" ? "☀️" : "🌙";
-
         async function loadTodos() {
             const res = await fetch(`${API}/todos`, { headers: getHeaders() });
+            if (res.status === 401) {
+                logout();
+                return;
+            }
             const todos = await res.json();
             const list = document.getElementById("todoList");
             list.innerHTML = "";
@@ -236,7 +413,6 @@
             todos.forEach(todo => {
                 const li = document.createElement("li");
                 if (todo.completed) li.classList.add("completed");
-
                 li.innerHTML = `
                     <input type="checkbox" ${todo.completed ? "checked" : ""}
                            onchange="toggleTodo(${todo.id}, this.checked)">
@@ -257,7 +433,6 @@
                 headers: getHeaders(),
                 body: JSON.stringify({ text })
             });
-
             input.value = "";
             loadTodos();
         }
@@ -281,7 +456,6 @@
         async function clearCompleted() {
             const res = await fetch(`${API}/todos`, { headers: getHeaders() });
             const todos = await res.json();
-
             for (const todo of todos) {
                 if (todo.completed) {
                     await fetch(`${API}/todos/${todo.id}`, {
@@ -293,9 +467,14 @@
             loadTodos();
         }
 
-        loadTodos();
+        if (token) {
+            showTodoApp();
+        }
 
-        document.getElementById("todoInput").addEventListener("keypress", function(e) {
+        document.getElementById("password").addEventListener("keypress", e => {
+            if (e.key === "Enter") handleAuth();
+        });
+        document.getElementById("todoInput").addEventListener("keypress", e => {
             if (e.key === "Enter") addTodo();
         });
     </script>
