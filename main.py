@@ -11,15 +11,13 @@ from jose import JWTError, jwt
 
 app = FastAPI()
 
-# ============== CONFIG ==============
 SECRET_KEY = os.getenv("SECRET_KEY", "william-todo-secret-2026")
 DATABASE_URL = os.getenv("DATABASE_URL")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ============== DATABASE ==============
 def get_db():
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
@@ -27,8 +25,6 @@ def get_db():
 def init_db():
     conn = get_db()
     cur = conn.cursor()
-
-    # Users table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -37,8 +33,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
-    # Todos table (with user_id for privacy)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS todos (
             id SERIAL PRIMARY KEY,
@@ -48,7 +42,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
     conn.commit()
     cur.close()
     conn.close()
@@ -58,7 +51,6 @@ try:
 except Exception as e:
     print("Database init error:", e)
 
-# ============== SECURITY HELPERS ==============
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -67,7 +59,6 @@ def get_password_hash(password):
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    # Ensure 'sub' is always a string
     if "sub" in to_encode:
         to_encode["sub"] = str(to_encode["sub"])
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -77,14 +68,14 @@ def create_access_token(data: dict):
 def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
+
     token = authorization.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-	user_id = payload.get("sub")
-	if user_id is None:
-    		raise HTTPException(status_code=401, detail="Invalid token")
-	user_id = int(user_id)
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        user_id = int(user_id)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
@@ -99,7 +90,6 @@ def get_current_user(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
-# ============== MODELS ==============
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
@@ -120,13 +110,10 @@ class Todo(BaseModel):
     text: str
     completed: bool
 
-# ============== AUTH ROUTES ==============
 @app.post("/register", response_model=Token)
 def register(user: UserCreate):
     conn = get_db()
     cur = conn.cursor()
-
-    # Check if email already exists
     cur.execute("SELECT id FROM users WHERE email = %s", (user.email,))
     if cur.fetchone():
         cur.close()
@@ -161,7 +148,6 @@ def login(user: UserLogin):
     access_token = create_access_token(data={"sub": db_user["id"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
-# ============== TODO ROUTES (private to each user) ==============
 @app.get("/todos", response_model=List[Todo])
 def list_todos(current_user: dict = Depends(get_current_user)):
     conn = get_db()
