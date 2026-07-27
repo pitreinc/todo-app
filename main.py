@@ -81,10 +81,10 @@ def get_current_user(authorization: Optional[str] = Header(None)):
     token = authorization.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-user_id = payload.get("sub")
-if user_id is None:
-    raise HTTPException(status_code=401, detail="Invalid token")
-user_id = int(user_id)
+	user_id = payload.get("sub")
+	if user_id is None:
+    		raise HTTPException(status_code=401, detail="Invalid token")
+	user_id = int(user_id)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
