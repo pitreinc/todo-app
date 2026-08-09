@@ -300,10 +300,11 @@
 
         <!-- TODOS -->
         <div id="todoSection" class="hidden">
-            <div class="input-row">
-                <input type="text" id="todoInput" placeholder="Add a new task...">
-                <button class="add-btn" onclick="addTodo()">Add</button>
-            </div>
+<div class="input-row" style="flex-wrap: wrap;">
+    <input type="text" id="todoInput" placeholder="Add a new task..." style="flex: 1; min-width: 180px;">
+    <input type="date" id="dueDateInput" style="padding: 14px 12px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(0,0,0,0.25); color: var(--text);">
+    <button class="add-btn" onclick="addTodo()">Add</button>
+</div>
 
             <div class="toolbar">
                 <p id="counter">0 items left</p>
@@ -410,40 +411,30 @@
             document.getElementById("counter").textContent =
                 remaining === 1 ? "1 item left" : `${remaining} items left`;
 
-            todos.forEach(todo => {
-                const li = document.createElement("li");
-                if (todo.completed) li.classList.add("completed");
-                li.innerHTML = `
-                    <input type="checkbox" ${todo.completed ? "checked" : ""}
-                           onchange="toggleTodo(${todo.id}, this.checked)">
-                    <span>${todo.text}</span>
-                    <button class="delete-btn" onclick="deleteTodo(${todo.id})">✕</button>
-                `;
-                list.appendChild(li);
-            });
+todos.forEach(todo => {
+    const li = document.createElement("li");
+    if (todo.completed) li.classList.add("completed");
+
+    let dueHtml = "";
+    if (todo.due_date) {
+        dueHtml = `<span style="font-size: 12px; color: var(--text-secondary); margin-left: 8px;">📅 ${todo.due_date}</span>`;
+    }
+
+    li.innerHTML = `
+        <input type="checkbox" ${todo.completed ? "checked" : ""}
+               onchange="toggleTodo(${todo.id}, this.checked)">
+        <span>${todo.text}${dueHtml}</span>
+        <button class="delete-btn" onclick="deleteTodo(${todo.id})">✕</button>
+    `;
+    list.appendChild(li);
+});
         }
 
-        async function addTodo() {
-            const input = document.getElementById("todoInput");
-            const text = input.value.trim();
-            if (!text) return;
-
-            await fetch(`${API}/todos`, {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify({ text })
-            });
-            input.value = "";
-            loadTodos();
-        }
-
-        async function toggleTodo(id, completed) {
-            await fetch(`${API}/todos/${id}?completed=${completed}`, {
-                method: "PUT",
-                headers: getHeaders()
-            });
-            loadTodos();
-        }
+<div class="input-row" style="flex-wrap: wrap;">
+    <input type="text" id="todoInput" placeholder="Add a new task..." style="flex: 1; min-width: 180px;">
+    <input type="date" id="dueDateInput" style="padding: 14px 12px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(0,0,0,0.25); color: var(--text);">
+    <button class="add-btn" onclick="addTodo()">Add</button>
+</div>
 
         async function deleteTodo(id) {
             await fetch(`${API}/todos/${id}`, {
