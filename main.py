@@ -25,6 +25,8 @@ def get_db():
 def init_db():
     conn = get_db()
     cur = conn.cursor()
+
+    # Users table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -33,15 +35,30 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # Todos table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS todos (
             id SERIAL PRIMARY KEY,
-            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             text TEXT NOT NULL,
             completed BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # Add user_id column if it does not exist yet
+    cur.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'todos' AND column_name = 'user_id'
+            ) THEN
+                ALTER TABLE todos ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+            END IF;
+        END $$;
+    """)
+
     conn.commit()
     cur.close()
     conn.close()
