@@ -44,6 +44,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .header-actions { display: flex; gap: 8px; }
         .icon-btn {
             background: var(--card);
             border: 1px solid var(--card-border);
@@ -116,6 +117,12 @@
             transform: translateY(-1px);
             box-shadow: 0 6px 20px var(--primary-glow);
         }
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text);
+            margin-top: 10px;
+        }
         .switch-auth {
             text-align: center;
             margin-top: 20px;
@@ -132,6 +139,16 @@
             background: rgba(244, 63, 94, 0.12);
             border: 1px solid rgba(244, 63, 94, 0.25);
             color: #fb7185;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+        .success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #34d399;
             padding: 12px 14px;
             border-radius: 10px;
             margin-bottom: 16px;
@@ -213,13 +230,22 @@
         }
         .delete-btn:hover { color: var(--danger); }
         .hidden { display: none !important; }
+        .profile-email {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>William's Todo</h1>
-            <button class="icon-btn" id="logoutBtn" onclick="logout()" title="Logout" style="display:none">⏻</button>
+            <div class="header-actions">
+                <button class="icon-btn" id="profileBtn" onclick="showProfile()" title="Profile" style="display:none">👤</button>
+                <button class="icon-btn" id="logoutBtn" onclick="logout()" title="Logout" style="display:none">⏻</button>
+            </div>
         </header>
 
         <!-- AUTH -->
@@ -248,6 +274,19 @@
             </div>
             <ul id="todoList"></ul>
         </div>
+
+        <!-- PROFILE -->
+        <div id="profileSection" class="card hidden">
+            <h2>Profile</h2>
+            <div class="error" id="profileError"></div>
+            <div class="success" id="profileSuccess"></div>
+            <p class="profile-email" id="profileEmail">Loading...</p>
+
+            <input type="password" id="currentPassword" placeholder="Current password">
+            <input type="password" id="newPassword" placeholder="New password">
+            <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+            <button class="btn btn-secondary" onclick="showTodoApp()">← Back to Todos</button>
+        </div>
     </div>
 
     <script>
@@ -255,14 +294,15 @@
         let token = localStorage.getItem("token");
         let isLoginMode = true;
 
-        function showError(msg) {
-            const el = document.getElementById("authError");
+        function showError(id, msg) {
+            const el = document.getElementById(id);
             el.textContent = msg;
             el.style.display = "block";
         }
-
-        function clearError() {
+        function clearMessages() {
             document.getElementById("authError").style.display = "none";
+            document.getElementById("profileError").style.display = "none";
+            document.getElementById("profileSuccess").style.display = "none";
         }
 
         function toggleAuthMode() {
@@ -271,15 +311,15 @@
             document.getElementById("authBtn").textContent = isLoginMode ? "Sign in" : "Create account";
             document.getElementById("switchText").textContent = isLoginMode ? "New here?" : "Already have an account?";
             document.getElementById("switchLink").textContent = isLoginMode ? "Create an account" : "Sign in";
-            clearError();
+            clearMessages();
         }
 
         async function handleAuth() {
-            clearError();
+            clearMessages();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
             if (!email || !password) {
-                showError("Please fill in both fields");
+                showError("authError", "Please fill in both fields");
                 return;
             }
             const endpoint = isLoginMode ? "/login" : "/register";
@@ -291,22 +331,73 @@
                 });
                 const data = await res.json();
                 if (!res.ok) {
-                    showError(data.detail || "Something went wrong");
+                    showError("authError", data.detail || "Something went wrong");
                     return;
                 }
                 token = data.access_token;
                 localStorage.setItem("token", token);
                 showTodoApp();
             } catch (err) {
-                showError("Network error. Please try again.");
+                showError("authError", "Network error. Please try again.");
             }
         }
 
         function showTodoApp() {
             document.getElementById("authSection").classList.add("hidden");
+            document.getElementById("profileSection").classList.add("hidden");
             document.getElementById("todoSection").classList.remove("hidden");
             document.getElementById("logoutBtn").style.display = "flex";
+            document.getElementById("profileBtn").style.display = "flex";
             loadTodos();
+        }
+
+        function showProfile() {
+            document.getElementById("todoSection").classList.add("hidden");
+            document.getElementById("profileSection").classList.remove("hidden");
+            clearMessages();
+            loadProfile();
+        }
+
+        async function loadProfile() {
+            const res = await fetch(`${API}/me`, { headers: getHeaders() });
+            if (res.status === 401) { logout(); return; }
+            const data = await res.json();
+            document.getElementById("profileEmail").textContent = data.email;
+        }
+
+        async function changePassword() {
+            clearMessages();
+            const current = document.getElementById("currentPassword").value;
+            const next = document.getElementById("newPassword").value;
+            if (!current || !next) {
+                showError("profileError", "Please fill in both password fields");
+                return;
+            }
+            if (next.length < 6) {
+                showError("profileError", "New password must be at least 6 characters");
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/change-password`, {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        current_password: current,
+                        new_password: next
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showError("profileError", data.detail || "Failed to update password");
+                    return;
+                }
+                document.getElementById("profileSuccess").textContent = "Password updated successfully";
+                document.getElementById("profileSuccess").style.display = "block";
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+            } catch (err) {
+                showError("profileError", "Network error");
+            }
         }
 
         function logout() {
@@ -314,7 +405,9 @@
             localStorage.removeItem("token");
             document.getElementById("authSection").classList.remove("hidden");
             document.getElementById("todoSection").classList.add("hidden");
+            document.getElementById("profileSection").classList.add("hidden");
             document.getElementById("logoutBtn").style.display = "none";
+            document.getElementById("profileBtn").style.display = "none";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
         }
@@ -328,10 +421,7 @@
 
         async function loadTodos() {
             const res = await fetch(`${API}/todos`, { headers: getHeaders() });
-            if (res.status === 401) {
-                logout();
-                return;
-            }
+            if (res.status === 401) { logout(); return; }
             const todos = await res.json();
             const list = document.getElementById("todoList");
             list.innerHTML = "";
@@ -342,7 +432,7 @@
             todos.forEach(todo => {
                 const li = document.createElement("li");
                 if (todo.completed) li.classList.add("completed");
-                let dueHtml = todo.due_date ? `<span class="due-date">📅 ${todo.due_date}</span>` : "";
+                const dueHtml = todo.due_date ? `<span class="due-date">📅 ${todo.due_date}</span>` : "";
                 li.innerHTML = `
                     <input type="checkbox" ${todo.completed ? "checked" : ""}
                            onchange="toggleTodo(${todo.id}, this.checked)">
@@ -411,4 +501,3 @@
     </script>
 </body>
 </html>
-
