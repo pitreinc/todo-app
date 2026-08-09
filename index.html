@@ -7,40 +7,41 @@
     <style>
         :root {
             --bg: #0b0f19;
-            --card: rgba(22, 27, 40, 0.85);
-            --card-border: rgba(255, 255, 255, 0.06);
+            --card: rgba(22, 27, 40, 0.88);
+            --card-border: rgba(255, 255, 255, 0.07);
             --text: #e8eef7;
             --text-secondary: #8b9bb4;
             --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.35);
+            --primary-glow: rgba(59, 130, 246, 0.4);
             --danger: #f43f5e;
-            --radius: 16px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --overdue: #fb7185;
+            --radius: 14px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: var(--bg);
             background-image: 
-                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+                radial-gradient(ellipse at 15% 15%, rgba(59, 130, 246, 0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 85%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
             color: var(--text);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 32px 16px 60px;
             line-height: 1.5;
         }
-        .container { max-width: 440px; margin: 0 auto; }
+        .container { max-width: 460px; margin: 0 auto; }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 600;
             letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #e8eef7 0%, #8b9bb4 100%);
+            background: linear-gradient(135deg, #e8eef7 0%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -49,11 +50,11 @@
             background: var(--card);
             border: 1px solid var(--card-border);
             color: var(--text-secondary);
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -62,20 +63,20 @@
         .icon-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
-            box-shadow: 0 0 12px var(--primary-glow);
+            box-shadow: 0 0 14px var(--primary-glow);
         }
         .card {
             background: var(--card);
             border: 1px solid var(--card-border);
             border-radius: var(--radius);
-            padding: 28px;
+            padding: 26px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
         }
         .card h2 {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             text-align: center;
         }
         input[type="email"],
@@ -83,13 +84,13 @@
         input[type="text"],
         input[type="date"] {
             width: 100%;
-            padding: 14px 16px;
+            padding: 13px 15px;
             font-size: 15px;
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.25);
+            border-radius: 11px;
+            background: rgba(0, 0, 0, 0.28);
             color: var(--text);
-            margin-bottom: 12px;
+            margin-bottom: 11px;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -100,11 +101,11 @@
         input::placeholder { color: var(--text-secondary); }
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             font-size: 15px;
             font-weight: 600;
             border: none;
-            border-radius: 12px;
+            border-radius: 11px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -115,7 +116,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px var(--primary-glow);
+            box-shadow: 0 6px 22px var(--primary-glow);
         }
         .btn-secondary {
             background: transparent;
@@ -125,8 +126,8 @@
         }
         .switch-auth {
             text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 18px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
         .switch-auth a {
@@ -139,31 +140,31 @@
             background: rgba(244, 63, 94, 0.12);
             border: 1px solid rgba(244, 63, 94, 0.25);
             color: #fb7185;
-            padding: 12px 14px;
+            padding: 11px 13px;
             border-radius: 10px;
-            margin-bottom: 16px;
-            font-size: 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
             display: none;
         }
         .success {
             background: rgba(16, 185, 129, 0.12);
             border: 1px solid rgba(16, 185, 129, 0.25);
             color: #34d399;
-            padding: 12px 14px;
+            padding: 11px 13px;
             border-radius: 10px;
-            margin-bottom: 16px;
-            font-size: 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
             display: none;
         }
         .input-row {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
         }
         .input-row input[type="text"] {
             flex: 1;
-            min-width: 160px;
+            min-width: 140px;
             margin-bottom: 0;
         }
         .input-row input[type="date"] {
@@ -171,20 +172,43 @@
             margin-bottom: 0;
         }
         .add-btn {
-            padding: 0 18px;
+            padding: 0 16px;
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 11px;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px var(--primary-glow);
+            transition: transform 0.15s;
+        }
+        .add-btn:hover { transform: translateY(-1px); }
+        .filters {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
         .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         #counter { color: var(--text-secondary); font-size: 13px; }
         .clear-btn {
@@ -197,43 +221,74 @@
         }
         ul { list-style: none; }
         li {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.22);
             border: 1px solid var(--card-border);
-            padding: 14px 16px;
+            padding: 13px 14px;
             margin-bottom: 8px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 11px;
+            transition: all 0.2s;
+            animation: fadeIn 0.25s ease;
         }
-        li.completed span { text-decoration: line-through; color: var(--text-secondary); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        li:hover { border-color: rgba(59, 130, 246, 0.3); }
+        li.completed span.todo-text { text-decoration: line-through; color: var(--text-secondary); }
+        li.overdue { border-color: rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.06); }
+        li.overdue .due-date { color: var(--overdue); font-weight: 500; }
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
             accent-color: var(--primary);
             cursor: pointer;
+            flex-shrink: 0;
         }
-        li span { flex: 1; font-size: 15px; word-break: break-word; }
+        .todo-content { flex: 1; min-width: 0; }
+        .todo-text {
+            font-size: 15px;
+            word-break: break-word;
+            cursor: pointer;
+            display: block;
+        }
+        .todo-text:hover { color: var(--primary); }
         .due-date {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-left: 6px;
+            margin-top: 2px;
+            display: block;
+        }
+        .edit-input {
+            width: 100%;
+            padding: 6px 10px;
+            font-size: 15px;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.4);
+            color: var(--text);
+            outline: none;
         }
         .delete-btn {
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             padding: 4px 6px;
             border-radius: 6px;
+            flex-shrink: 0;
+            opacity: 0.6;
+            transition: all 0.15s;
         }
-        .delete-btn:hover { color: var(--danger); }
+        .delete-btn:hover { color: var(--danger); opacity: 1; }
         .hidden { display: none !important; }
         .profile-email {
             text-align: center;
             color: var(--text-secondary);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             font-size: 14px;
         }
     </style>
@@ -268,6 +323,14 @@
                 <input type="date" id="dueDateInput">
                 <button class="add-btn" onclick="addTodo()">Add</button>
             </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+                <button class="filter-btn" data-filter="active" onclick="setFilter('active')">Active</button>
+                <button class="filter-btn" data-filter="completed" onclick="setFilter('completed')">Completed</button>
+                <button class="filter-btn" data-filter="overdue" onclick="setFilter('overdue')">Overdue</button>
+            </div>
+
             <div class="toolbar">
                 <p id="counter">0 items left</p>
                 <button class="clear-btn" onclick="clearCompleted()">Clear completed</button>
@@ -281,7 +344,6 @@
             <div class="error" id="profileError"></div>
             <div class="success" id="profileSuccess"></div>
             <p class="profile-email" id="profileEmail">Loading...</p>
-
             <input type="password" id="currentPassword" placeholder="Current password">
             <input type="password" id="newPassword" placeholder="New password">
             <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
@@ -293,6 +355,8 @@
         const API = "https://william-todo.onrender.com";
         let token = localStorage.getItem("token");
         let isLoginMode = true;
+        let allTodos = [];
+        let currentFilter = "all";
 
         function showError(id, msg) {
             const el = document.getElementById(id);
@@ -300,9 +364,9 @@
             el.style.display = "block";
         }
         function clearMessages() {
-            document.getElementById("authError").style.display = "none";
-            document.getElementById("profileError").style.display = "none";
-            document.getElementById("profileSuccess").style.display = "none";
+            ["authError", "profileError", "profileSuccess"].forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
         }
 
         function toggleAuthMode() {
@@ -322,9 +386,8 @@
                 showError("authError", "Please fill in both fields");
                 return;
             }
-            const endpoint = isLoginMode ? "/login" : "/register";
             try {
-                const res = await fetch(`${API}${endpoint}`, {
+                const res = await fetch(`${API}${isLoginMode ? "/login" : "/register"}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
@@ -337,7 +400,7 @@
                 token = data.access_token;
                 localStorage.setItem("token", token);
                 showTodoApp();
-            } catch (err) {
+            } catch {
                 showError("authError", "Network error. Please try again.");
             }
         }
@@ -381,10 +444,7 @@
                 const res = await fetch(`${API}/change-password`, {
                     method: "POST",
                     headers: getHeaders(),
-                    body: JSON.stringify({
-                        current_password: current,
-                        new_password: next
-                    })
+                    body: JSON.stringify({ current_password: current, new_password: next })
                 });
                 const data = await res.json();
                 if (!res.ok) {
@@ -395,7 +455,7 @@
                 document.getElementById("profileSuccess").style.display = "block";
                 document.getElementById("currentPassword").value = "";
                 document.getElementById("newPassword").value = "";
-            } catch (err) {
+            } catch {
                 showError("profileError", "Network error");
             }
         }
@@ -419,27 +479,90 @@
             };
         }
 
-        async function loadTodos() {
-            const res = await fetch(`${API}/todos`, { headers: getHeaders() });
-            if (res.status === 401) { logout(); return; }
-            const todos = await res.json();
+        function isOverdue(todo) {
+            if (!todo.due_date || todo.completed) return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return new Date(todo.due_date + "T00:00:00") < today;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.filter === filter);
+            });
+            renderTodos();
+        }
+
+        function renderTodos() {
+            let filtered = allTodos;
+            if (currentFilter === "active") filtered = allTodos.filter(t => !t.completed);
+            else if (currentFilter === "completed") filtered = allTodos.filter(t => t.completed);
+            else if (currentFilter === "overdue") filtered = allTodos.filter(t => isOverdue(t));
+
             const list = document.getElementById("todoList");
             list.innerHTML = "";
-            const remaining = todos.filter(t => !t.completed).length;
+
+            const remaining = allTodos.filter(t => !t.completed).length;
             document.getElementById("counter").textContent =
                 remaining === 1 ? "1 item left" : `${remaining} items left`;
 
-            todos.forEach(todo => {
+            filtered.forEach(todo => {
                 const li = document.createElement("li");
                 if (todo.completed) li.classList.add("completed");
-                const dueHtml = todo.due_date ? `<span class="due-date">📅 ${todo.due_date}</span>` : "";
+                if (isOverdue(todo)) li.classList.add("overdue");
+
+                const dueHtml = todo.due_date
+                    ? `<span class="due-date">📅 ${todo.due_date}${isOverdue(todo) ? " · Overdue" : ""}</span>`
+                    : "";
+
                 li.innerHTML = `
                     <input type="checkbox" ${todo.completed ? "checked" : ""}
                            onchange="toggleTodo(${todo.id}, this.checked)">
-                    <span>${todo.text}${dueHtml}</span>
+                    <div class="todo-content">
+                        <span class="todo-text" onclick="startEdit(${todo.id}, this)">${todo.text}</span>
+                        ${dueHtml}
+                    </div>
                     <button class="delete-btn" onclick="deleteTodo(${todo.id})">✕</button>
                 `;
                 list.appendChild(li);
+            });
+        }
+
+        async function loadTodos() {
+            const res = await fetch(`${API}/todos`, { headers: getHeaders() });
+            if (res.status === 401) { logout(); return; }
+            allTodos = await res.json();
+            renderTodos();
+        }
+
+        function startEdit(id, el) {
+            const currentText = el.textContent;
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "edit-input";
+            input.value = currentText;
+            el.replaceWith(input);
+            input.focus();
+            input.select();
+
+            const save = async () => {
+                const newText = input.value.trim();
+                if (newText && newText !== currentText) {
+                    await fetch(`${API}/todos/${id}?text=${encodeURIComponent(newText)}`, {
+                        method: "PUT",
+                        headers: getHeaders()
+                    });
+                    loadTodos();
+                } else {
+                    loadTodos();
+                }
+            };
+
+            input.addEventListener("blur", save);
+            input.addEventListener("keydown", e => {
+                if (e.key === "Enter") input.blur();
+                if (e.key === "Escape") loadTodos();
             });
         }
 
@@ -477,15 +600,12 @@
         }
 
         async function clearCompleted() {
-            const res = await fetch(`${API}/todos`, { headers: getHeaders() });
-            const todos = await res.json();
-            for (const todo of todos) {
-                if (todo.completed) {
-                    await fetch(`${API}/todos/${todo.id}`, {
-                        method: "DELETE",
-                        headers: getHeaders()
-                    });
-                }
+            const completed = allTodos.filter(t => t.completed);
+            for (const todo of completed) {
+                await fetch(`${API}/todos/${todo.id}`, {
+                    method: "DELETE",
+                    headers: getHeaders()
+                });
             }
             loadTodos();
         }
