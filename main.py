@@ -26,7 +26,6 @@ def init_db():
     conn = get_db()
     cur = conn.cursor()
 
-    # Users table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -36,7 +35,6 @@ def init_db():
         )
     """)
 
-    # Todos table
     cur.execute("""
         CREATE TABLE IF NOT EXISTS todos (
             id SERIAL PRIMARY KEY,
@@ -46,7 +44,7 @@ def init_db():
         )
     """)
 
-    # Add user_id column if it does not exist yet
+    # Add user_id if missing
     cur.execute("""
         DO $$
         BEGIN
@@ -55,6 +53,19 @@ def init_db():
                 WHERE table_name = 'todos' AND column_name = 'user_id'
             ) THEN
                 ALTER TABLE todos ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+            END IF;
+        END $$;
+    """)
+
+    # Add due_date if missing
+    cur.execute("""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'todos' AND column_name = 'due_date'
+            ) THEN
+                ALTER TABLE todos ADD COLUMN due_date DATE;
             END IF;
         END $$;
     """)
@@ -121,11 +132,13 @@ class Token(BaseModel):
 
 class TodoCreate(BaseModel):
     text: str
+    due_date: Optional[str] = None   # format: "YYYY-MM-DD"
 
 class Todo(BaseModel):
     id: int
     text: str
     completed: bool
+    due_date: Optional[str] = None
 
 @app.post("/register", response_model=Token)
 def register(user: UserCreate):
@@ -170,12 +183,22 @@ def list_todos(current_user: dict = Depends(get_current_user)):
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "SELECT id, text, completed FROM todos WHERE user_id = %s ORDER BY id",
+        """
+        SELECT id, text, completed, due_date
+        FROM todos
+        WHERE user_id = %s
+        ORDER BY due_date NULLS LAST, id
+        """,
         (current_user["id"],)
     )
     rows = cur.fetchall()
     cur.close()
     conn.close()
+
+    # Convert dates to strings
+    for row in rows:
+        if row.get("due_date"):
+            row["due_date"] = str(row["due_date"])
     return rows
 
 @app.post("/todos", response_model=Todo)
@@ -183,13 +206,21 @@ def create_todo(todo: TodoCreate, current_user: dict = Depends(get_current_user)
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO todos (user_id, text) VALUES (%s, %s) RETURNING id, text, completed",
-        (current_user["id"], todo.text)
+        """
+        INSERT INTO todos (user_id, text, due_date)
+        VALUES (%s, %s, %s)
+        RETURNING id, text, completed, due_date
+        """,
+        (current_user["id"], todo.text, todo.due_date)
     )
     new_todo = cur.fetchone()
     conn.commit()
     cur.close()
     conn.close()
+
+    # Convert date to string for JSON
+    if new_todo.get("due_date"):
+        new_todo["due_date"] = str(new_todo["due_date"])
     return new_todo
 
 @app.put("/todos/{todo_id}")
