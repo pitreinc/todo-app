@@ -140,6 +140,10 @@ class Todo(BaseModel):
     completed: bool
     due_date: Optional[str] = None
 
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+
 @app.post("/register", response_model=Token)
 def register(user: UserCreate):
     conn = get_db()
@@ -177,6 +181,35 @@ def login(user: UserLogin):
 
     access_token = create_access_token(data={"sub": db_user["id"]})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/change-password")
+def change_password(data: ChangePassword, current_user: dict = Depends(get_current_user)):
+    conn = get_db()
+    cur = conn.cursor()
+
+    # Get current hashed password
+    cur.execute("SELECT hashed_password FROM users WHERE id = %s", (current_user["id"],))
+    row = cur.fetchone()
+
+    if not row or not verify_password(data.current_password, row["hashed_password"]):
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    # Update to new password
+    new_hashed = get_password_hash(data.new_password)
+    cur.execute(
+        "UPDATE users SET hashed_password = %s WHERE id = %s",
+        (new_hashed, current_user["id"])
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"message": "Password updated successfully"}
+
+@app.get("/me")
+def get_me(current_user: dict = Depends(get_current_user)):
+    return {"email": current_user["email"]}
 
 @app.get("/todos", response_model=List[Todo])
 def list_todos(current_user: dict = Depends(get_current_user)):
