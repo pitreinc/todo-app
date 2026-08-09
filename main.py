@@ -257,17 +257,40 @@ def create_todo(todo: TodoCreate, current_user: dict = Depends(get_current_user)
     return new_todo
 
 @app.put("/todos/{todo_id}")
-def update_todo(todo_id: int, completed: bool, current_user: dict = Depends(get_current_user)):
+def update_todo(
+    todo_id: int,
+    completed: Optional[bool] = None,
+    text: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
     conn = get_db()
     cur = conn.cursor()
-    cur.execute(
-        "UPDATE todos SET completed = %s WHERE id = %s AND user_id = %s",
-        (completed, todo_id, current_user["id"])
-    )
+
+    # Build dynamic update
+    updates = []
+    values = []
+
+    if completed is not None:
+        updates.append("completed = %s")
+        values.append(completed)
+    if text is not None:
+        updates.append("text = %s")
+        values.append(text)
+
+    if not updates:
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=400, detail="Nothing to update")
+
+    values.extend([todo_id, current_user["id"]])
+    query = f"UPDATE todos SET {', '.join(updates)} WHERE id = %s AND user_id = %s"
+
+    cur.execute(query, values)
     if cur.rowcount == 0:
         cur.close()
         conn.close()
         raise HTTPException(status_code=404, detail="Todo not found")
+
     conn.commit()
     cur.close()
     conn.close()
